@@ -589,6 +589,7 @@ public class ReadArticleActivity extends AppCompatActivity {
 
     private void initButtons() {
         initMarkAsReadButtonView();
+        intiDeleteButtonView();
         initPrevNextButtons();
     }
 
@@ -609,6 +610,12 @@ public class ReadArticleActivity extends AppCompatActivity {
 
         findViewById(R.id.btnMarkRead).setVisibility(!archived ? View.VISIBLE : View.GONE);
         findViewById(R.id.btnMarkUnread).setVisibility(archived ? View.VISIBLE : View.GONE);
+    }
+
+    private void intiDeleteButtonView() {
+        Button buttonDelete = findViewById(R.id.btnDelete);
+
+        buttonDelete.setOnClickListener(v -> deleteArticle());
     }
 
     private void initPrevNextButtons() {
