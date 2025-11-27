@@ -27,7 +27,7 @@
     <string name="d_deleteArticle_message">Sei sicuro/a di voler cancellare l\'articolo\?</string>
     <string name="txtNetOffline">Controlla di essere connesso a Internet.</string>
     <string name="txtConfigNotSet">Configura l\'app prima di sincronizzare.</string>
-    <string name="dialog_add_label">Salva pagina</string>
+    <string name="dialog_add_label">Aggiungi un nuovo articolo</string>
     <string name="page_url">URL pagina</string>
     <string name="share_article_title">Condividi articolo</string>
     <string name="share_text_extra">" attraverso @wallabagapp"</string>
