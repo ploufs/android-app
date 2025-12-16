@@ -1302,7 +1302,6 @@ public class ReadArticleActivity extends AppCompatActivity {
 
             initTtsForArticle();
 
-            // Use ViewTreeObserver to monitor height changes
             setupTtsContainerHeightListener();
         } else {
             getSupportFragmentManager()
@@ -1314,10 +1313,8 @@ public class ReadArticleActivity extends AppCompatActivity {
 
             settings.setTtsVisible(false);
 
-            // Remove padding when TTS is hidden
             adjustScrollViewPaddingForTts(0);
 
-            // Remove the height listener
             removeTtsContainerHeightListener();
         }
 
@@ -1330,7 +1327,6 @@ public class ReadArticleActivity extends AppCompatActivity {
         FrameLayout ttsContainer = findViewById(R.id.tts_container);
         if (ttsContainer == null) return;
 
-        // Remove any existing listener first
         removeTtsContainerHeightListener();
 
         ttsContainerLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
