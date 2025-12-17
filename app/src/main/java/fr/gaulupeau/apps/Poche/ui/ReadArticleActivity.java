@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
@@ -298,6 +299,7 @@ public class ReadArticleActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        removeTtsContainerHeightListener();
         EventHelper.unregister(this);
 
         super.onDestroy();
@@ -1293,12 +1295,14 @@ public class ReadArticleActivity extends AppCompatActivity {
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.viewMain, ttsFragment, TAG_TTS_FRAGMENT)
+                    .add(R.id.tts_container, ttsFragment, TAG_TTS_FRAGMENT)
                     .commit();
 
             settings.setTtsVisible(true);
 
             initTtsForArticle();
+
+            setupTtsContainerHeightListener();
         } else {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -1308,9 +1312,62 @@ public class ReadArticleActivity extends AppCompatActivity {
             ttsFragment = null;
 
             settings.setTtsVisible(false);
+
+            adjustScrollViewPaddingForTts(0);
+
+            removeTtsContainerHeightListener();
         }
 
         invalidateOptionsMenu();
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener ttsContainerLayoutListener;
+
+    private void setupTtsContainerHeightListener() {
+        FrameLayout ttsContainer = findViewById(R.id.tts_container);
+        if (ttsContainer == null) return;
+
+        removeTtsContainerHeightListener();
+
+        ttsContainerLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            private int lastHeight = -1;
+
+            @Override
+            public void onGlobalLayout() {
+                FrameLayout container = findViewById(R.id.tts_container);
+                if (container != null) {
+                    int currentHeight = container.getHeight();
+                    if (currentHeight != lastHeight && currentHeight > 0) {
+                        lastHeight = currentHeight;
+                        adjustScrollViewPaddingForTts(currentHeight);
+                    }
+                }
+            }
+        };
+
+        ttsContainer.getViewTreeObserver().addOnGlobalLayoutListener(ttsContainerLayoutListener);
+    }
+
+    private void removeTtsContainerHeightListener() {
+        if (ttsContainerLayoutListener != null) {
+            FrameLayout ttsContainer = findViewById(R.id.tts_container);
+            if (ttsContainer != null) {
+                ttsContainer.getViewTreeObserver().removeOnGlobalLayoutListener(ttsContainerLayoutListener);
+                ttsContainer.getViewTreeObserver().removeOnGlobalLayoutListener(ttsContainerLayoutListener);
+            }
+            ttsContainerLayoutListener = null;
+        }
+    }
+
+    private void adjustScrollViewPaddingForTts(int ttsHeight) {
+        if (scrollView != null) {
+            scrollView.setPadding(
+                    scrollView.getPaddingLeft(),
+                    scrollView.getPaddingTop(),
+                    scrollView.getPaddingRight(),
+                    ttsHeight
+            );
+        }
     }
 
     private void initTtsForArticle() {
